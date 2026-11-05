@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>VICTORY NEO | 20 SLOT NEW MACHINES</title>
 <style>
-*{box-sizing:border-box}html,body{margin:0;background:#fff;font-family:Arial,'Noto Sans JP',sans-serif;color:#222} .wrap{max-width:850px;margin:auto;padding:8px 0 14px;overflow:hidden}.heading{text-align:center;margin:0 0 10px;font-size:15px;letter-spacing:.18em;font-weight:700}.heading small{display:block;font-size:10px;color:#777;letter-spacing:.23em;margin-top:4px}.viewport{overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;overscroll-behavior-x:contain;-webkit-overflow-scrolling:touch;touch-action:pan-x pan-y}.viewport::-webkit-scrollbar{display:none}.track{display:flex;align-items:center;gap:12px;padding:0 9%}.slide{flex:0 0 82%;scroll-snap-align:center;min-width:0}.slide img{display:block;width:100%;height:auto;aspect-ratio:4/5;object-fit:contain;background:#f6f6f6;border-radius:6px}.dots{display:flex;justify-content:center;gap:7px;margin:12px 0 3px}.dot{width:7px;height:7px;border:0;padding:0;border-radius:99px;background:#d0d0d0;cursor:pointer}.dot[aria-current=true]{width:20px;background:#555}.hint{text-align:center;color:#888;font-size:10px;letter-spacing:.15em;margin:8px 0 0}@media(prefers-reduced-motion:reduce){.viewport{scroll-behavior:auto}}
+*{box-sizing:border-box}html,body{margin:0;background:#fff;font-family:Arial,'Noto Sans JP',sans-serif;color:#222} .wrap{max-width:850px;margin:auto;padding:8px 0 14px;overflow:hidden}.heading{text-align:center;margin:0 0 10px;font-size:15px;letter-spacing:.18em;font-weight:700}.heading small{display:block;font-size:10px;color:#777;letter-spacing:.23em;margin-top:4px}.viewport{overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;overscroll-behavior-x:contain;-webkit-overflow-scrolling:touch;touch-action:pan-x pan-y}.viewport::-webkit-scrollbar{display:none}.track{display:flex;align-items:center;gap:12px;padding:0 9%}.slide{flex:0 0 82%;scroll-snap-align:center;min-width:0}.slide a{display:block;cursor:pointer;touch-action:pan-x pan-y}.slide a:focus-visible{outline:3px solid #2479d6;outline-offset:3px;border-radius:6px}.slide img{display:block;width:100%;height:auto;aspect-ratio:4/5;object-fit:contain;background:#f6f6f6;border-radius:6px}.dots{display:flex;justify-content:center;gap:7px;margin:12px 0 3px}.dot{width:7px;height:7px;border:0;padding:0;border-radius:99px;background:#d0d0d0;cursor:pointer}.dot[aria-current=true]{width:20px;background:#555}.hint{text-align:center;color:#888;font-size:10px;letter-spacing:.15em;margin:8px 0 0}@media(prefers-reduced-motion:reduce){.viewport{scroll-behavior:auto}}
 </style>
 </head>
 <body>
@@ -13,19 +13,37 @@
 <h2 class="heading">20 SLOT<small>NEW MACHINE</small></h2>
 <div class="viewport" id="viewport" tabindex="0" aria-label="左右にスワイプして新台を見る"><div class="track" id="track"></div></div>
 <div class="dots" id="dots" aria-label="画像の切り替え"></div>
-<p class="hint">SWIPE TO VIEW ◀ ▶</p>
+<p class="hint">SWIPE TO VIEW ◀ ▶　/　TAP FOR DETAILS</p>
 </section>
 <script>
 (()=>{
   // 新台の機種数が変わったら、この配列だけ編集してください。
   const files=['new20s1.jpg','new20s2.jpg','new20s3.jpg','new20s4.jpg','new20s5.jpg'];
   const base='https://cdn.p-town.dmm.com/shop/9470/新台/';
+  const machines=[
+    {name:'L 少女☆歌劇 レヴュースタァライト -The SLOT-',url:'https://p-town.dmm.com/machines/4706'},
+    {name:'戦国コレクション6',url:'https://p-town.dmm.com/machines/5010'},
+    {name:'Lパチスロ 炎炎ノ消防隊2',url:'https://p-town.dmm.com/machines/4926'},
+    {name:'スマスロスーパーリオエース2',url:'https://p-town.dmm.com/machines/4984'},
+    {name:'スマスロ ストリートファイター6',url:'https://p-town.dmm.com/machines/5068'}
+  ];
   const viewport=document.getElementById('viewport'),track=document.getElementById('track'),dots=document.getElementById('dots');
   let index=0,timer=null,resumeTimer=null,interacting=false;
   files.forEach((file,i)=>{
     const slide=document.createElement('div');slide.className='slide';
-    const img=document.createElement('img');img.src=base+file;img.alt=`20円スロット新台 ${i+1}`;img.loading=i<2?'eager':'lazy';
-    slide.append(img);track.append(slide);
+    const machine=machines[i];
+    const link=document.createElement('a');
+    link.href=machine.url;
+    link.target='_blank';
+    link.rel='noopener noreferrer';
+    link.setAttribute('aria-label',`${machine.name} の機種紹介ページを開く`);
+    const img=document.createElement('img');img.src=base+file;img.alt=machine.name;img.loading=i<2?'eager':'lazy';
+    link.append(img);slide.append(link);track.append(slide);
+    // スワイプの直後はリンクを開かない。タップのみ有効。
+    let startX=0,startY=0,moved=false;
+    link.addEventListener('pointerdown',e=>{startX=e.clientX;startY=e.clientY;moved=false},{passive:true});
+    link.addEventListener('pointermove',e=>{if(Math.abs(e.clientX-startX)>9||Math.abs(e.clientY-startY)>9)moved=true},{passive:true});
+    link.addEventListener('click',e=>{if(moved){e.preventDefault();moved=false}});
     const dot=document.createElement('button');dot.className='dot';dot.type='button';dot.setAttribute('aria-label',`${i+1}枚目へ`);dot.addEventListener('click',()=>{pauseThenResume();go(i)});dots.append(dot);
   });
   const slides=[...track.children],buttons=[...dots.children];
